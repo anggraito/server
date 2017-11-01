@@ -19,6 +19,24 @@ var getDataScrapping = (req, res) => {
   })
 }
 
+var newsDetail = (req, res) => {
+  request('http://www.tribunnews.com/metropolitan/2017/10/29/kecelakaan-di-tol-dalam-kota-ini-ulah-pengemudi-pajero-yang-masih-anak-anak', function (error, response, html) {
+    if(!error && response.statusCode == 200) {
+      var $ = cheerio.load(html)
+      var fixSpaceUsingRegex
+      $('.content').each(function(i, element){
+        text = $(this).text()
+        fixSpaceUsingRegex = text.replace(/\s+/gm, ' ')
+        console.log(fixSpaceUsingRegex);
+        res.send(fixSpaceUsingRegex)
+      })
+    }
+  })
+}
+
+
+
 module.exports = {
-  getDataScrapping
+  getDataScrapping,
+  newsDetail
 }
