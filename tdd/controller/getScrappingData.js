@@ -6,13 +6,15 @@ var getDataScrapping = (req, res) => {
     if (!error && response.statusCode == 200) {
       var $ = cheerio.load(html);
       var url
+      var itterationData = []
       $('.mr140 a').each(function(i, element){
         url = $(this).attr('href')
         dataTraversion = {
           url: url
         }
-        res.send(dataTraversion)
+        itterationData.push(dataTraversion)
     })
+    res.send(itterationData)
     }
   })
 }
