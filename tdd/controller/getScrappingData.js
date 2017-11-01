@@ -6,15 +6,41 @@ var getDataScrapping = (req, res) => {
     if (!error && response.statusCode == 200) {
       var $ = cheerio.load(html);
       var url
-      var itterationData = []
+      var arrUrl = []
       $('.mr140 a').each(function(i, element){
         url = $(this).attr('href')
         dataTraversion = {
           url: url
         }
-        itterationData.push(dataTraversion)
-    })
-    res.send(itterationData)
+        arrUrl.push(dataTraversion)
+        // console.log('===>', arrUrl);
+      })
+
+      // console.log('---->', arrUrl);
+      var result
+      var dataTampung = []
+      arrUrl.map(data => {
+        // console.log('---->',data.url);
+        request(data.url, (error, response, html) => {
+          if(!error && response.statusCode == 200) {
+            var $ = cheerio.load(html)
+            var fixSpaceUsingRegex
+            $('.content').each(function(i, element){
+              text = $(this).text()
+              fixSpaceUsingRegex = text.replace(/\s+/gm, ' ')
+              // console.log(fixSpaceUsingRegex);
+              datas = {
+                dataTexts: fixSpaceUsingRegex
+              }
+              dataTampung.push(datas)
+            })
+            // console.log('!!!!!!!!!!!!!!!',dataTampung);
+            result = dataTampung
+            console.log(result);
+            res.send(result)
+          }
+        })
+      })
     }
   })
 }
