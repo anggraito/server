@@ -8,13 +8,14 @@ function translate (scrapData, req, res) {
   var counter = 0
   var arrTranslate = []
   scrapData.forEach(data => {
+    console.log('=======>', data.linksite);
     axios.post(`https://translate.yandex.net/api/v1.5/tr.json/translate?key=${key}&text=${data.dataTexts}&lang=id-en`)
     .then(texting => {
-      data = {
-        linksite: data.url,
-        text: texting.data
+      datas = {
+        linksite: data.linksite,
+        texts: texting.data
       }
-      arrTranslate.push(data)
+      arrTranslate.push(datas)
       counter +=1
       if(counter === scrapData.length) {
         res.send(arrTranslate)
