@@ -55,3 +55,6 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
+.env
+
+google_service_account_key.json
