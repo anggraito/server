@@ -15,6 +15,7 @@ function mapURL (url, req, res) {
             fixSpaceUsingRegex = text.replace(/\s+/gm, ' ')
             // console.log(fixSpaceUsingRegex);
             datas = {
+              linksite: dataText.url,
               dataTexts: fixSpaceUsingRegex
             }
             arrData.push(datas)
