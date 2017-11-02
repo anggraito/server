@@ -12,10 +12,7 @@ var googleMapsClient = require('@google/maps').createClient({
   key: process.env.GOOGLE_MAPS_KEY
 });
 
-// function diganti promise , return promise
-
-// router.post('/', function (req, res, next) {
-function analyze (news) {
+function analyze (news, linksite) {
   var promise = new Promise ((resolve, reject) => {
     console.log('---------- proses on helper -----')
     var text = news
@@ -48,7 +45,7 @@ function analyze (news) {
     language
       .analyzeEntities({ document: document })
       .then(results => {
-        const entities = results[0].entities;
+        var entities = results[0].entities;
 
         entities.forEach(entity => {
           if (entity.type === 'LOCATION') {
@@ -60,6 +57,9 @@ function analyze (news) {
           }
         })
 
+        entityFiltered = entityFiltered.slice(0,3)
+        entityFiltered[0].linksite = linksite
+
         var addressToAnalyze = ''
         if (entityFiltered[0].name !== null) {
           addressToAnalyze = entityFiltered[0].name
@@ -70,30 +70,17 @@ function analyze (news) {
         googleMapsClient.geocode({
           address: addressToAnalyze
         }, function (err, response) {
-          console.log('---------------')
-          // console.log('response------------', response)
-          // console.log('err ======= >', err)
+      
           if (response.json.status === 'OK') {
             var resultData = response.json.results
             console.log(resultData[0].geometry.location)
             entityFiltered[0].lat = resultData[0].geometry.location.lat
             entityFiltered[0].lng = resultData[0].geometry.location.lng
-            resolve(entityFiltered)
-          } else {
-            console.log('gak ada data latitude')
-            resolve(entityFiltered)
           }
           
-
-          // if (resultData) {
-            // entityFiltered[0].lat = resultData[0].geometry.location.lat
-            // entityFiltered[0].lng = resultData[0].geometry.location.lng
-            // console.log('inside if , before return from helper', entityFiltered)
-            // console.log('inside if , before return from helper')
-            // resolve(entityFiltered)
-          // }
+          resolve(entityFiltered)
+          
         })
-
       })
       .catch(err => {
         console.error('ERROR:', err);
@@ -105,8 +92,6 @@ function analyze (news) {
   
 }
 
-
-// })
 
 
 module.exports = {analyze};

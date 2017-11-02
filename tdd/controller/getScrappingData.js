@@ -4,41 +4,16 @@ var cheerio = require('cheerio');
 var helperAnalyze = require('../helper/helperAnalyze')
 
 function analyze (arrNews, res) {
-  // looping sebanyak element array untuk di analisa
   var analyzeResult = []
   var counter = 0
-  // start looping
   var arrayPromise = []
   arrNews.forEach(news => {
-    console.log('inside foreach', counter)
-    // console.log('-------------news------------', news )
-    var analyzed = helperAnalyze.analyze(news.text.text[0]) // return promise
-    console.log('analyzed', analyzed)
+    var analyzed = helperAnalyze.analyze(news.text.text[0], news.linksite) // return promise
     arrayPromise.push(analyzed)
-    // analyzed.linksite = news.linksite
-    // console.log('analyzed', analyzed)
-    // analyzeResult.push(analyzed)
-    // counter += 1
-    // console.log('counter', counter)
-    // if (counter === arrNews.length) {
-    //   console.log('counter', counter)
-    //   res.send(analyzeResult)
-    // }
   })
-  // console.log('arrayPromise --------------------->', arrayPromise)
-  console.log('arrayPromise.length --------------------->', arrayPromise.length)
-  Promise.all(arrayPromise).then(function(hasilakhir) {
-      console.log('--------------hasil akhir--------------', hasilakhir )
-      console.log('--------------hasilakhir length--------------', hasilakhir.length )
-      res.send(hasilakhir) 
-    })
-  
-  console.log('after promise all')
-
-  // res.send(arrayPromise) // harusnya isinya function promise2
+ 
+  Promise.all(arrayPromise).then(function(hasilakhir) { res.send(hasilakhir) })
 }
-
-// ditampung di array , terakir di promise all
 
 function translate (scrapData, req, res) {
   var key = 'trnsl.1.1.20171102T111252Z.359135713e63ed1f.8ce92bdc31ac888e9daf7d12f2bcd5fb5160f574'
