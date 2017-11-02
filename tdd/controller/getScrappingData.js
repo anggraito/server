@@ -1,8 +1,34 @@
+var axios = require('axios')
 var request = require('request');
 var cheerio = require('cheerio');
 
+
+function translate (scrapData, req, res) {
+  var key = 'trnsl.1.1.20171102T063424Z.ab0d7c20aa55a9a2.fe862c678d8a7fe08f5b65cc896e20c5cf365e16'
+  var counter = 0
+  var arrTranslate = []
+  scrapData.forEach(data => {
+    axios.post(`https://translate.yandex.net/api/v1.5/tr.json/translate?key=${key}&text=${data.dataTexts}&lang=id-en`)
+    .then(texting => {
+      data = {
+        linksite: data.url,
+        text: texting.data
+      }
+      arrTranslate.push(data)
+      counter +=1
+      if(counter === scrapData.length) {
+        res.send(arrTranslate)
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  })
+}
+
 function mapURL (url, req, res) {
   var count = 0
+  var promiseCounting = 0
   var arrData = []
   url.forEach((dataText) => {
     request(`${dataText.url}`, function (error, response, html) {
@@ -12,18 +38,23 @@ function mapURL (url, req, res) {
 
           $('.content').each(function(i, element){
             text = $(this).text()
-            fixSpaceUsingRegex = text.replace(/\s+/gm, ' ')
-            // console.log(fixSpaceUsingRegex);
+            fixSpaceUsingRegexs = text.replace(/\s+/gm, ' ')
+            // console.log(typeof(fixSpaceUsingRegex));
+            fixSpaceUsingRegex = fixSpaceUsingRegexs.replace(/[^a-zA-Z0-9 ]/g, "");
             datas = {
               linksite: dataText.url,
               dataTexts: fixSpaceUsingRegex
             }
+
             arrData.push(datas)
             count +=1
           })
+
           if(count === url.length)
           {
-            res.send(arrData)
+            // console.log('===>', arrData);
+            // res.send(arrData)
+            translate (arrData, req, res)
           }
       }
     })
@@ -49,6 +80,7 @@ var getDataScrapping = (req, res) => {
      }
    })
 }
+
 
 
 
