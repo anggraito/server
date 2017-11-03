@@ -2,6 +2,9 @@ var axios = require('axios')
 var request = require('request');
 var cheerio = require('cheerio');
 var helperAnalyze = require('../helper/helperAnalyze')
+var helperSendDB = require('../helper/helperSendDB')
+var Diffbot = require('diffbot').Diffbot
+var diffbot = new Diffbot('aef962244988878095f0e5b0dcb92650')
 
 function analyze (arrNews, res) {
   var analyzeResult = []
@@ -12,15 +15,33 @@ function analyze (arrNews, res) {
     arrayPromise.push(analyzed)
   })
  
-  Promise.all(arrayPromise).then(function(hasilakhir) { res.send(hasilakhir) })
+  Promise.all(arrayPromise)
+  .then(function(hasilakhir) { 
+    // res.send(hasilakhir) 
+    // var arrayResult = helperSendDB.writeDB(hasilakhir)
+    var promisesSendDB = []
+    hasilakhir.forEach( data => {
+      var promise = helperSendDB.send(data)
+      promisesSendDB.push(promise)
+    })
+    
+    console.log('promisesSendDB', promisesSendDB)
+    // console.log('arrayResult di controller', arrayResult)
+    Promise.all(promisesSendDB)
+      .then(result => {
+        console.log('result', result)
+        res.send(result)
+      })
+      .catch(err => {res.send(err)})
+  })
 }
 
-function translate (scrapData, req, res) {
-  var key = 'trnsl.1.1.20171102T111252Z.359135713e63ed1f.8ce92bdc31ac888e9daf7d12f2bcd5fb5160f574'
+function translate (scrapData, res) {
+  var key = 'trnsl.1.1.20171103T070950Z.fcde122bc3f4e5ca.86bb0a9d13f0c54cca706ced923f398ca4ad2b1a'
   var counter = 0
   var arrTranslate = []
   scrapData.forEach(data => {
-    axios.post(`https://translate.yandex.net/api/v1.5/tr.json/translate?key=${key}&text=${data.dataTexts}&lang=id-en`)
+    axios.post(`https://translate.yandex.net/api/v1.5/tr.json/translate?key=${key}&text=${data.news}&lang=id-en`)
     .then(texting => {
       data = {
         linksite: data.linksite,
@@ -41,44 +62,33 @@ function translate (scrapData, req, res) {
   })
 }
 
-function mapURL (url, req, res) {
-  var count = 0
-  var promiseCounting = 0
-  var arrData = []
-  url.forEach((dataText) => {
-    request(`${dataText.url}`, function (error, response, html) {
-      if(!error && response.statusCode == 200) {
-        var $ = cheerio.load(html)
-        var fixSpaceUsingRegex
-
-          $('.content').each(function(i, element){
-            text = $(this).text()
-            fixSpaceUsingRegexs = text.replace(/\s+/gm, ' ')
-            // console.log(typeof(fixSpaceUsingRegex));
-            fixSpaceUsingRegex = fixSpaceUsingRegexs.replace(/[^a-zA-Z0-9 ]/g, "");
-            datas = {
-              linksite: dataText.url,
-              dataTexts: fixSpaceUsingRegex
-            }
-
-            arrData.push(datas)
-            count +=1
-          })
-
-          if(count === url.length)
-          {
-            // console.log('===>', arrData);
-            // res.send(arrData)
-            translate (arrData, req, res)
-          }
-      }
+function mapURL (articleUrl, req, res) {
+  var counter = 0
+  var arrNewsData = []
+  articleUrl.forEach(articleData => {
+    diffbot.article({ uri: `${articleData.url}`}, function(err, response) {
+      // console.log('response ===>', response)
+      // if (response.media) console.log(JSON.stringify(response.media));
+        article = response.objects[0].text.replace(/[^a-zA-Z0-9.,]/g, " ").replace(/\s+/gm, ' ')
+        data = {
+          linksite: articleData.url,
+          news: article
+        }
+  
+        arrNewsData.push(data)
+        counter +=1
+        
+      if (counter === articleUrl.length)
+        {
+        translate(arrNewsData, res)
+        }
     })
   })
 }
 
 var getDataScrapping = (req, res) => {
 
-  request('http://www.tribunnews.com/tag/kecelakaan-lalulintas?page=2', function (error, response, html) {
+  request('http://www.tribunnews.com/tag/kecelakaan?page=1', function (error, response, html) {
      if (!error && response.statusCode == 200) {
        var $ = cheerio.load(html);
        var url
@@ -90,7 +100,6 @@ var getDataScrapping = (req, res) => {
          }
          arrUrl.push(dataTraversion)
        })
-      //  console.log('===>', arrUrl);
        mapURL(arrUrl, req, res)
      }
    })

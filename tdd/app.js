@@ -5,6 +5,15 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cors = require ('cors')
+var mongoose = require('mongoose')
+
+mongoose.connect('mongodb://localhost/accidentifier', (err) => {
+  if (!err) {
+    console.log('database connected');
+  } else {
+    console.log('error connecting db');
+  }
+})
 
 var index = require('./routes/index');
 var users = require('./routes/users');

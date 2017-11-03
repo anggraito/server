@@ -28,6 +28,14 @@ function analyze (news, linksite) {
       addressName = streetAddress
     }
 
+    if (villageAddress !== null) {
+      villageAddress = villageAddress[0]
+    }
+
+    if (districtAddress !== null) {
+      districtAddress = districtAddress[0]
+    }
+
     var address = {
       name: addressName,
       village: villageAddress,
@@ -57,13 +65,14 @@ function analyze (news, linksite) {
           }
         })
 
-        entityFiltered = entityFiltered.slice(0,3)
+        entityFiltered = entityFiltered.slice(0,2)
         entityFiltered[0].linksite = linksite
 
         var addressToAnalyze = ''
         var streetAddr = ''
         var villageAddr = ''
         var districtAddr = ''
+        var location = ''
         if (entityFiltered[0].name !== null) {
           streetAddr = entityFiltered[0].name
         } 
@@ -76,7 +85,12 @@ function analyze (news, linksite) {
           districtAddr = entityFiltered[0].district
         }
 
-        var addressToAnalyze = `${streetAddr} ${villageAddr} ${districtAddr} ${entityFiltered[1].name}` 
+
+        if (entityFiltered[1]) {
+          location = entityFiltered[1].name
+        }
+
+        var addressToAnalyze = `${streetAddr} ${villageAddr} ${districtAddr} ${location}` 
         
         googleMapsClient.geocode({
           address: addressToAnalyze
@@ -99,7 +113,8 @@ function analyze (news, linksite) {
         })
       })
       .catch(err => {
-        console.error('ERROR:', err);
+        console.error('INI ERROR NYA:', err);
+        console.log('ini document nya:', document )
         reject(err)
       })
   })
