@@ -14,9 +14,9 @@ var googleMapsClient = require('@google/maps').createClient({
 
 function analyze (news, linksite) {
   var promise = new Promise ((resolve, reject) => {
-    console.log('---------- proses on helper -----')
+    // console.log('---------- proses on helper -----')
     var text = news
-    var streetAddress = text.match(/jalan (\w+) (\w+) (\w+)/gi)
+    var streetAddress = text.match(/\sjalan\s(\w+) (\w+) (\w+)/gi)
     var villageAddress = text.match(/desa\s*(\S+)/gi)
     var districtAddress = text.match(/kecamatan\s*(\S+)/gi)
 
@@ -61,12 +61,23 @@ function analyze (news, linksite) {
         entityFiltered[0].linksite = linksite
 
         var addressToAnalyze = ''
+        var streetAddr = ''
+        var villageAddr = ''
+        var districtAddr = ''
         if (entityFiltered[0].name !== null) {
-          addressToAnalyze = entityFiltered[0].name
-        } else {
-          addressToAnalyze = entityFiltered[1].name
+          streetAddr = entityFiltered[0].name
+        } 
+
+        if (entityFiltered[0].village !== null) {
+          villageAddr = entityFiltered[0].village
         }
 
+        if (entityFiltered[0].district !== null) {
+          districtAddr = entityFiltered[0].district
+        }
+
+        var addressToAnalyze = `${streetAddr} ${villageAddr} ${districtAddr} ${entityFiltered[1].name}` 
+        
         googleMapsClient.geocode({
           address: addressToAnalyze
         }, function (err, response) {
@@ -76,6 +87,11 @@ function analyze (news, linksite) {
             console.log(resultData[0].geometry.location)
             entityFiltered[0].lat = resultData[0].geometry.location.lat
             entityFiltered[0].lng = resultData[0].geometry.location.lng
+            entityFiltered[0].addressDetected = addressToAnalyze
+          } else {
+            entityFiltered[0].lat = null
+            entityFiltered[0].lng = null
+            entityFiltered[0].addressDetected = addressToAnalyze
           }
           
           resolve(entityFiltered)
