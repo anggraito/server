@@ -18,7 +18,7 @@ function analyze (news, linksite) {
     var text = news
     var streetAddress = text.match(/\sjalan\s(\w+) (\w+) (\w+)/gi)
     var villageAddress = text.match(/desa\s*(\S+)/gi)
-    var districtAddress = text.match(/kecamatan\s*(\S+)/gi)
+    var districtAddress = text.match(/district\s*(\S+)/gi)
 
     var entityFiltered = []
     var addressName = ''
@@ -115,7 +115,11 @@ function analyze (news, linksite) {
       .catch(err => {
         console.error('INI ERROR NYA:', err);
         console.log('ini document nya:', document )
-        reject(err)
+        entityFiltered[0].lat = null
+        entityFiltered[0].lng = null
+        entityFiltered[0].addressDetected = null
+        resolve(entityFiltered)
+        // reject(err)
       })
   })
 

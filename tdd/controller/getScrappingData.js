@@ -21,8 +21,11 @@ function analyze (arrNews, res) {
     // var arrayResult = helperSendDB.writeDB(hasilakhir)
     var promisesSendDB = []
     hasilakhir.forEach( data => {
-      var promise = helperSendDB.send(data)
-      promisesSendDB.push(promise)
+      if (data[0].lat !== null) {
+        var promise = helperSendDB.send(data)
+        promisesSendDB.push(promise)
+      }
+      console.log('next')
     })
     
     console.log('promisesSendDB', promisesSendDB)
@@ -69,8 +72,9 @@ function mapURL (articleUrl, req, res) {
     diffbot.article({ uri: `${articleData.url}`}, function(err, response) {
       // console.log('response ===>', response)
       // if (response.media) console.log(JSON.stringify(response.media));
-        article = response.objects[0].text.replace(/[^a-zA-Z0-9.,]/g, " ").replace(/\s+/gm, ' ')
-        data = {
+      article = response.objects[0].text.replace(/[^a-zA-Z0-9.,]/g, " ").replace(/\s+/gm, ' ')
+      article = article.replace(/kecamatan/gi, 'district')
+      data = {
           linksite: articleData.url,
           news: article
         }
