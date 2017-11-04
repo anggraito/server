@@ -35,26 +35,33 @@ module.exports = {
       
       })
       .catch(err => { res.send(err) })
+  },
+  getRawDataAccident: function (req, res, next) {
+    Accident.find({})
+      .then(accidents => { res.send(accidents) })
+      .catch(err => { res.send(err) })
+  },
+  getOne: function (req, res, next) {
+    Accident.findOne({ linksite: req.body.url })
+      .then(accident => {
+        console.log('accident', accident)
+        res.send({accident: accident})
+      })
+      .catch(err => {
+        console.log('err', err)
+        res.send(err)
+      })
   }
 }
 
 function getDistance (accident, lat, lng) {
   return promise = new Promise ((resolve, reject) => {
     distance.get({
-      // index: 1,
       origin: `${lat},${lng}`,
       destination: `${accident.lat},${accident.lng}`,
       units: 'kilometers'
     }, function (err, data) {
       if (!err) {
-        // console.log(`start point coordinate ${lat},${lng}`)
-        // console.log(`destination coordinate ${accident.lat},${accident.lng}` )
-        // console.log('data.distanceValue', data.distanceValue)
-        // console.log('data.distance', data.distance)
-        // // console.log('radius requested', radius)
-        // console.log('---------------------------------')
-
-        // accidentData = { ...accident }
         dataMaps = {
             distanceValue: data.distanceValue,
             distance: data.distance,
@@ -65,33 +72,7 @@ function getDistance (accident, lat, lng) {
           accident: accident,
           dataMaps: dataMaps
         })
-        // if (data.distanceValue <= radius) {
-          // accident.dataMaps = data
-
-          // accidentData.dataMaps = {
-          //   distanceValue: data.distanceValue,
-          //   distance: data.distance,
-          //   origin: data.origin,
-          //   destination: data.destination
-          // }
-          // result.push(accidentData)  
-        // }
-
-        // console.log('result', result)
-        // counter += 1
-        // console.log(counter)
-        // console.log('data accident', accident)
-        // if (counter === accidents.length) {
-        //   // res.send(accidents)
-        //   console.log(result)
-        //   res.send(result)
-        // }
       } else {
-        console.log('data error ================')
-        // console.log(err)
-        console.log(accident)
-        console.log('==========================')
-        accidentData = { ...accident }
         dataMaps = null
         resolve({
           accident: accident,

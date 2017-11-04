@@ -85,7 +85,6 @@ function analyze (news, linksite) {
           districtAddr = entityFiltered[0].district
         }
 
-
         if (entityFiltered[1]) {
           location = entityFiltered[1].name
         }

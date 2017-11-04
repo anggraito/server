@@ -5,6 +5,7 @@ var helperAnalyze = require('../helper/helperAnalyze')
 var helperSendDB = require('../helper/helperSendDB')
 var Diffbot = require('diffbot').Diffbot
 var diffbot = new Diffbot('aef962244988878095f0e5b0dcb92650')
+const Accident = require('../models/Accident')
 
 function analyze (arrNews, res) {
   var analyzeResult = []
@@ -17,23 +18,23 @@ function analyze (arrNews, res) {
  
   Promise.all(arrayPromise)
   .then(function(hasilakhir) { 
-    // res.send(hasilakhir) 
-    // var arrayResult = helperSendDB.writeDB(hasilakhir)
+    console.log('hasil akhir', hasilakhir)
     var promisesSendDB = []
+
     hasilakhir.forEach( data => {
       if (data[0].lat !== null) {
         var promise = helperSendDB.send(data)
         promisesSendDB.push(promise)
       }
-      console.log('next')
     })
     
-    console.log('promisesSendDB', promisesSendDB)
-    // console.log('arrayResult di controller', arrayResult)
     Promise.all(promisesSendDB)
       .then(result => {
         console.log('result', result)
-        res.send(result)
+        res.send({
+          message: 'scrapped done',
+          dataSendToDB: result
+        })
       })
       .catch(err => {res.send(err)})
   })
@@ -53,10 +54,7 @@ function translate (scrapData, res) {
       arrTranslate.push(data)
       counter +=1
       if(counter === scrapData.length) {
-        // res.send(arrTranslate)
-        // function untuk analyze , then res.send inside the function
         analyze(arrTranslate, res)
-        
       }
     })
     .catch(err => {
@@ -65,20 +63,21 @@ function translate (scrapData, res) {
   })
 }
 
-function mapURL (articleUrl, req, res) {
+function mapURL (articleUrl, res) {
+  
   var counter = 0
   var arrNewsData = []
+
   articleUrl.forEach(articleData => {
     diffbot.article({ uri: `${articleData.url}`}, function(err, response) {
-      // console.log('response ===>', response)
-      // if (response.media) console.log(JSON.stringify(response.media));
+      
       article = response.objects[0].text.replace(/[^a-zA-Z0-9.,]/g, " ").replace(/\s+/gm, ' ')
       article = article.replace(/kecamatan/gi, 'district')
       data = {
           linksite: articleData.url,
           news: article
         }
-  
+
         arrNewsData.push(data)
         counter +=1
         
@@ -90,8 +89,38 @@ function mapURL (articleUrl, req, res) {
   })
 }
 
-var getDataScrapping = (req, res) => {
+function cekVersioning(articleUrl, res) {
+  // versioning  
+  var newArticleUrl = []
+  var counter = 0
+  articleUrl.forEach(data => {
+    // console.log('data', data)
+    Accident.findOne({ linksite: data.url })
+      .then(accident => {
+        if (accident == null) { // article belum ada di db
+          newArticleUrl.push(data)
+        }
 
+        counter += 1
+        if (counter === articleUrl.length) {
+          if (newArticleUrl.length > 0) {
+            mapURL(newArticleUrl, res)
+            // res.send(newArticleUrl)
+          } else {
+            res.send({
+              message: 'scrapped done',
+              dataSendToDB: []
+            })
+          }
+        }
+
+      })
+      .catch(err => { console.log(err) })
+  })
+}
+
+
+var getDataScrapping = (req, res) => {
   request('http://www.tribunnews.com/tag/kecelakaan?page=1', function (error, response, html) {
      if (!error && response.statusCode == 200) {
        var $ = cheerio.load(html);
@@ -104,7 +133,7 @@ var getDataScrapping = (req, res) => {
          }
          arrUrl.push(dataTraversion)
        })
-       mapURL(arrUrl, req, res)
+       cekVersioning(arrUrl, res)
      }
    })
 }
