@@ -1,0 +1,36 @@
+{
+  "name": "tdd",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www",
+    "test": "mocha"
+  },
+  "dependencies": {
+    "@google-cloud/language": "^1.0.0",
+    "@google/maps": "^0.4.5",
+    "axios": "^0.17.0",
+    "body-parser": "~1.18.2",
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "cheerio": "^1.0.0-rc.2",
+    "cookie-parser": "~1.4.3",
+    "cors": "^2.8.4",
+    "debug": "~2.6.9",
+    "diffbot": "^1.0.3",
+    "dotenv": "^4.0.0",
+    "express": "~4.15.5",
+    "google-distance": "^1.0.1",
+    "jade": "~1.11.0",
+    "mongodb": "^2.2.33",
+    "mongoose": "^4.13.0",
+    "morgan": "~1.9.0",
+    "nodemon": "^1.12.1",
+    "request": "^2.83.0",
+    "serve-favicon": "~2.4.5"
+  },
+  "devDependencies": {
+    "mocha": "^4.0.1"
+  }
+}
