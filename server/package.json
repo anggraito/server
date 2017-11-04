@@ -21,6 +21,7 @@
     "diffbot": "^1.0.3",
     "dotenv": "^4.0.0",
     "express": "~4.15.5",
+    "google-distance": "^1.0.1",
     "jade": "~1.11.0",
     "mongodb": "^2.2.33",
     "mongoose": "^4.13.0",

@@ -18,6 +18,7 @@ mongoose.connect('mongodb://localhost/accidentifier', (err) => {
 var index = require('./routes/index');
 var users = require('./routes/users');
 var scrappingData = require('./routes/getDataScrapping')
+var accident = require('./routes/accident')
 
 var app = express();
 
@@ -37,6 +38,7 @@ app.use(cors())
 app.use('/', index);
 app.use('/users', users);
 app.use('/scrapping', scrappingData)
+app.use('/api/accident', accident) // return data accident inside radius coverage . req.body {radius, cordinates }
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
