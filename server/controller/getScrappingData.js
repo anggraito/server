@@ -41,7 +41,7 @@ function analyze (arrNews, res) {
 }
 
 function translate (scrapData, res) {
-  var key = 'trnsl.1.1.20170824T120724Z.9356bcdc324c8661.ac1287eb09250e795cc078f79a333c5269b6b540'
+  var key = process.env.KEY_YANDEX
   var counter = 0
   var arrTranslate = []
   scrapData.forEach(data => {

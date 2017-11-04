@@ -6,8 +6,11 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cors = require ('cors')
 var mongoose = require('mongoose')
+require('dotenv').config()
 
-mongoose.connect('mongodb://localhost/accidentifier', (err) => {
+var uri = `mongodb://bagus:${process.env.PASSWORDDB}@cluster0-shard-00-00-xnsgq.mongodb.net:27017,cluster0-shard-00-01-xnsgq.mongodb.net:27017,cluster0-shard-00-02-xnsgq.mongodb.net:27017/accidentifier?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin`
+
+mongoose.connect(uri, (err) => {
   if (!err) {
     console.log('database connected');
   } else {
