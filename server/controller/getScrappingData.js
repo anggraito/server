@@ -12,7 +12,8 @@ function analyze (arrNews, res) {
   var counter = 0
   var arrayPromise = []
   arrNews.forEach(news => {
-    var analyzed = helperAnalyze.analyze(news.text.text[0], news.linksite) // return promise
+    // var analyzed = helperAnalyze.analyze(news.text.text[0], news.linksite) // return promise
+    var analyzed = helperAnalyze.analyze(news.text.text[0], news.linksite, news.imgUrl, news.title) // return promise
     arrayPromise.push(analyzed)
   })
  
@@ -49,6 +50,8 @@ function translate (scrapData, res) {
     .then(texting => {
       data = {
         linksite: data.linksite,
+        imgUrl: data.imgUrl,
+        title: data.title,
         text: texting.data
       }
       arrTranslate.push(data)
@@ -70,12 +73,15 @@ function mapURL (articleUrl, res) {
 
   articleUrl.forEach(articleData => {
     diffbot.article({ uri: `${articleData.url}`}, function(err, response) {
-      
+      img = response.objects[0].images[0]
+      title = response.objects[0].title
       article = response.objects[0].text.replace(/[^a-zA-Z0-9.,]/g, " ").replace(/\s+/gm, ' ')
       article = article.replace(/kecamatan/gi, 'district')
       data = {
           linksite: articleData.url,
-          news: article
+          news: article,
+          imgUrl: img.url,
+          title: title
         }
 
         arrNewsData.push(data)
@@ -83,7 +89,8 @@ function mapURL (articleUrl, res) {
         
       if (counter === articleUrl.length)
         {
-        translate(arrNewsData, res)
+          // console.log('arrNewsData ====================>' ,arrNewsData)
+          translate(arrNewsData, res)
         }
     })
   })

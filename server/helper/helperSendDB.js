@@ -6,6 +6,8 @@ function send (data) {
     console.log('promise')
       Accident.create({
         linksite: data[0].linksite,
+        title: data[0].title,
+        imgUrl: data[0].imgUrl,
         addressDetected: data[0].addressDetected,
         lat: data[0].lat,
         lng: data[0].lng,

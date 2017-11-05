@@ -30,7 +30,7 @@ module.exports = {
           .then(results => {
             hasilNotNull = results.filter(result => result.dataMaps !== null)
             hasilAkhir = hasilNotNull.filter(hasil => hasil.dataMaps.distanceValue <= radius)
-            res.send(hasilAkhir)
+            res.send(hasilAkhir) // []
           })
       
       })
@@ -76,7 +76,7 @@ function getDistance (accident, lat, lng) {
         dataMaps = null
         resolve({
           accident: accident,
-          dataMaps: dataMaps
+          dataMaps: dataMaps // null
         })
       }
     })
