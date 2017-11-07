@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-var accidentSchema = new mongoose.Schema({
+var accidentDummySchema = new mongoose.Schema({
   linksite: String,
   title: String,
   imgUrl: String,
@@ -10,11 +10,12 @@ var accidentSchema = new mongoose.Schema({
   street: String,
   village: String,
   district: String,
-  date: Date
+  date: Date,
+  valid: String
 }, {
     timestamps: true
-})
+  })
 
-var Accident = mongoose.model('Accident', accidentSchema)
+var AccidentDummy = mongoose.model('AccidentDummy', accidentDummySchema)
 
-module.exports = Accident
+module.exports = AccidentDummy

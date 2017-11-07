@@ -12,7 +12,7 @@ var googleMapsClient = require('@google/maps').createClient({
   key: process.env.GOOGLE_MAPS_KEY
 });
 
-function analyze (news, linksite, imgUrl, title) {
+function analyze (news, linksite, imgUrl, title, dates) {
   var promise = new Promise ((resolve, reject) => {
     // console.log('---------- proses on helper -----')
     var text = news
@@ -69,6 +69,7 @@ function analyze (news, linksite, imgUrl, title) {
         entityFiltered[0].linksite = linksite
         entityFiltered[0].imgUrl = imgUrl
         entityFiltered[0].title = title
+        entityFiltered[0].dates = dates
 
         var addressToAnalyze = ''
         var streetAddr = ''

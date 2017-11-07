@@ -13,7 +13,7 @@ function analyze (arrNews, res) {
   var arrayPromise = []
   arrNews.forEach(news => {
     // var analyzed = helperAnalyze.analyze(news.text.text[0], news.linksite) // return promise
-    var analyzed = helperAnalyze.analyze(news.text.text[0], news.linksite, news.imgUrl, news.title) // return promise
+    var analyzed = helperAnalyze.analyze(news.text.text[0], news.linksite, news.imgUrl, news.title, news.dates) // return promise
     arrayPromise.push(analyzed)
   })
  
@@ -52,7 +52,8 @@ function translate (scrapData, res) {
         linksite: data.linksite,
         imgUrl: data.imgUrl,
         title: data.title,
-        text: texting.data
+        text: texting.data,
+        dates: data.dates
       }
       arrTranslate.push(data)
       counter +=1
@@ -75,13 +76,15 @@ function mapURL (articleUrl, res) {
     diffbot.article({ uri: `${articleData.url}`}, function(err, response) {
       img = response.objects[0].images[0]
       title = response.objects[0].title
+      dates = response.objects[0].date
       article = response.objects[0].text.replace(/[^a-zA-Z0-9.,]/g, " ").replace(/\s+/gm, ' ')
       article = article.replace(/kecamatan/gi, 'district')
       data = {
           linksite: articleData.url,
           news: article,
           imgUrl: img.url,
-          title: title
+          title: title,
+          dates: dates
         }
 
         arrNewsData.push(data)
@@ -128,7 +131,7 @@ function cekVersioning(articleUrl, res) {
 
 
 var getDataScrapping = (req, res) => {
-  request('http://www.tribunnews.com/tag/kecelakaan?page=1', function (error, response, html) {
+  request('http://www.tribunnews.com/tag/kecelakaan?page=7', function (error, response, html) {
      if (!error && response.statusCode == 200) {
        var $ = cheerio.load(html);
        var url

@@ -8,7 +8,7 @@ var cors = require ('cors')
 var mongoose = require('mongoose')
 require('dotenv').config()
 
-var uri = `mongodb://bagus:${process.env.PASSWORDDB}@cluster0-shard-00-00-xnsgq.mongodb.net:27017,cluster0-shard-00-01-xnsgq.mongodb.net:27017,cluster0-shard-00-02-xnsgq.mongodb.net:27017/accidentifier?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin`
+var uri = `mongodb://bagus:${process.env.PASSWORDDB}@cluster0-shard-00-00-xnsgq.mongodb.net:27017,cluster0-shard-00-01-xnsgq.mongodb.net:27017,cluster0-shard-00-02-xnsgq.mongodb.net:27017/lucky?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin`
 
 mongoose.connect(uri, (err) => {
   if (!err) {
@@ -22,7 +22,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var scrappingData = require('./routes/getDataScrapping')
 var accident = require('./routes/accident')
-
+var dummy = require('./routes/dummy')
 var app = express();
 
 // view engine setup
@@ -42,7 +42,7 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/scrapping', scrappingData)
 app.use('/api/accident', accident) // return data accident inside radius coverage . req.body {radius, cordinates }
-
+app.use('/create', dummy)
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

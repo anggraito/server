@@ -13,7 +13,8 @@ function send (data) {
         lng: data[0].lng,
         street: data[0].name,
         village: data[0].village,
-        district: data[0].district
+        district: data[0].district,
+        date: new Date(data[0].dates)
       })
         .then(accident => {
           resolve(accident)
