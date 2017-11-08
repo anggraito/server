@@ -10,7 +10,8 @@ var accidentSchema = new mongoose.Schema({
   street: String,
   village: String,
   district: String,
-  date: Date
+  date: Date,
+  valid: String
 }, {
     timestamps: true
 })

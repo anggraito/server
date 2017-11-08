@@ -5,5 +5,6 @@ var accidentController = require('../controller/accidentController')
 router.get('/', accidentController.getRawDataAccident)
 router.post('/one', accidentController.getOne)
 router.post('/', accidentController.getAccident)
+router.patch('/:_id', accidentController.update)
 
 module.exports = router;

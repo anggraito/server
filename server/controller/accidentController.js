@@ -41,6 +41,21 @@ module.exports = {
       .then(accidents => { res.send(accidents) })
       .catch(err => { res.send(err) })
   },
+  update: function (req, res, next) {
+    console.log('valid : ', req.body.valid)
+    Accident.findOneAndUpdate({
+      _id: req.params._id
+    }, {
+        addressDetected: req.body.addressDetected,
+        lat: req.body.lat,
+        lng: req.body.lng,
+        valid: req.body.valid || null
+      })
+      .then(dataUpdated => {
+        res.send(dataUpdated)
+      })
+      .catch(err => { res.send(err) })
+  },
   getOne: function (req, res, next) {
     Accident.findOne({ linksite: req.body.url })
       .then(accident => {

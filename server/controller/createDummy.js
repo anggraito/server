@@ -2,7 +2,7 @@ var db = require('../models/Accident')
 
 var createDummy = (req, res) => {
   db.create({
-    linksite: req.body.link,
+    linksite: req.body.linksite,
     title: req.body.title,
     imgUrl: req.body.imgUrl,
     addressDetected: req.body.addressDetected,
@@ -12,7 +12,7 @@ var createDummy = (req, res) => {
     village: req.body.village || null,
     district: req.body.district || null,
     date: req.body.date,
-    valid: req.body.valid
+    valid: req.body.valid || null
   })
   .then(response => {
     res.send(response)
